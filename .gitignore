@@ -15,3 +15,5 @@ Image
 
 #no tools
 *.exe
+*.bin
+*.map
