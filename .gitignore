@@ -1,0 +1,17 @@
+#no .o files
+*.o
+
+#no .a files
+*.a
+
+#
+
+#no Image
+Image
+
+#no
+*.h.old
+*.h.cur1
+
+#no tools
+/tools
