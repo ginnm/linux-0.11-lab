@@ -14,4 +14,4 @@ Image
 *.h.cur1
 
 #no tools
-/tools
+*.exe
