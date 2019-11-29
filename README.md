@@ -31,7 +31,6 @@
 - [5 代码地址](#5-----)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-@[toc]
 # 1 内核级线程模型
 ## 1.1 内核级线程概念、图示
 1. 用户级线程的缺点：如果一个用户级线程在内核中阻塞，则这个进程的所有用户级线程将全部阻塞。这就限制了用户级线程的并发程度，从而限制了由并发性带来的计算机硬件工作效率的提升。
