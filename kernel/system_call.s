@@ -32,6 +32,7 @@
 
 SIG_CHLD	= 17
 
+ESP0 = 4
 EAX		= 0x00
 EBX		= 0x04
 ECX		= 0x08
@@ -48,9 +49,10 @@ OLDSS		= 0x2C
 state	= 0		# these are offsets into the task-struct.
 counter	= 4
 priority = 8
-signal	= 12
-sigaction = 16		# MUST be 16 (=len of sigaction)
-blocked = (33*16)
+KERNEL_STACK = 12 #add
+signal	= 16	#changed
+sigaction = 20  #changed
+blocked = (37*16) #changed
 
 # offsets within sigaction
 sa_handler = 0
@@ -67,6 +69,54 @@ nr_system_calls = 72
 .globl _system_call,_sys_fork,_timer_interrupt,_sys_execve
 .globl _hd_interrupt,_floppy_interrupt,_parallel_interrupt
 .globl _device_not_available, _coprocessor_error
+.globl _switch_to
+.globl _first_return_from_kernel
+
+.extern _current
+.extern _tss
+.extern _last_task_used_math 
+
+.align 2
+_first_return_from_kernel:
+    popl %edx
+    popl %edi
+    popl %esi
+    pop %gs
+    pop %fs
+    pop %es
+    pop %ds
+    iret
+
+.align 2
+_switch_to:
+    pushl %ebp
+    movl %esp,%ebp
+    pushl %ecx
+    pushl %ebx
+    pushl %eax
+    movl 8(%ebp),%ebx
+    cmpl %ebx,_current
+    je 1f
+    movl %ebx,%eax		#切换PCB
+	xchgl %eax,_current	#切换PCB
+    movl _tss,%ecx		#tss内核栈指针重写
+    addl $4096,%ebx		#tss内核栈指针重写
+    movl %ebx,ESP0(%ecx)#tss内核栈指针重写
+    movl %esp,KERNEL_STACK(%eax)	#内核栈的切换
+    movl 8(%ebp),%ebx				#内核栈的切换
+    movl KERNEL_STACK(%ebx),%esp	#内核栈的切换
+	movl 12(%ebp), %ecx				#切换LDT
+    lldt %cx						#切换LDT
+    movl $0x17,%ecx
+	mov %cx,%fs
+    cmpl %eax,_last_task_used_math 
+    jne 1f
+    clts
+1: 	popl %eax
+	popl %ebx
+    popl %ecx
+    popl %ebp
+	ret
 
 .align 2
 bad_sys_call:
