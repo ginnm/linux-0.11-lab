@@ -129,6 +129,8 @@
 #define __NR_ssetmask	69
 #define __NR_setreuid	70
 #define __NR_setregid	71
+#define __NR_create_shm 72
+#define __NR_get_shm 73
 
 #define _syscall0(type,name) \
 type name(void) \
